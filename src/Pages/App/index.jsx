@@ -49,7 +49,6 @@ const App =()=> {
       <AppRoutes></AppRoutes>
       <Navbar></Navbar>
     </BrowserRouter>
-
     </ShoppingCartProvider>
    
        
