@@ -1,9 +1,18 @@
 import { PlusIcon } from '@heroicons/react/24/solid'
 import React, { useContext } from 'react'
 import { ShoppingCartContext } from '../../Context'
+//import { ProductDetail } from '../ProductDetail'
 
 export const Card = (data) => {
     const context = useContext(ShoppingCartContext)
+
+    //Show product in a Card with a function in a productDetail
+    const showProduct = (ProductDetail) => {
+        context.openProductDetail()
+        context.setProductToShow(ProductDetail)
+    }
+
+    //console.log(ProductDetail)
   return (
     <div
      className='bg-white cursor-pointer w-56 h-60 rounded-lg'
