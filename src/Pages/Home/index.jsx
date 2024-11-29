@@ -3,10 +3,11 @@ import { useEffect, useState } from 'react'
 import React from 'react'
 import { Card } from '../../Components/Card'
 import { Layout } from '../../Components/Layout'
+import { ProductDetail } from '../../Components/ProductDetail'
 
 export const Home = () => {
 
-    const[ items, setItems] = useState(null)
+    const[ items, setItems ] = useState(null)
 
     useEffect( ()=> {
         fetch('https://api.escuelajs.co/api/v1/products')
@@ -26,7 +27,7 @@ export const Home = () => {
                 ))
             }
         </div>
-       
+       <ProductDetail/>
         
     </Layout>
   )
