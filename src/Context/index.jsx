@@ -18,10 +18,14 @@ export const ShoppingCartProvider = ({children}) =>{
     const closeCheckoutSideMenu = () => setIsCheckoutSideMenuOpen(false)
     
     //Product Detail  * show product
-    const [productToShow, SetProductToShow]= useState({})
+    const [productToShow, setProductToShow]= useState({})
 
     //Shopping Cart * Add products to cart
     const[ cartProducts, setCartProducts] = useState([])
+
+
+    //Shopping cart * Order
+    const [ order, setOrder] = useState([])
 
     console.log('COUNT: ', count)
 
@@ -33,12 +37,14 @@ export const ShoppingCartProvider = ({children}) =>{
             closeProductDetail,
             isProductDetailOpen,
             productToShow,
-            SetProductToShow,
+            setProductToShow,
             cartProducts,
             setCartProducts,
             isCheckoutSideMenuOpen,
             openCheckoutSideMenu,
-            closeCheckoutSideMenu
+            closeCheckoutSideMenu,
+            order,
+            setOrder
 
         }}>
             {children}
