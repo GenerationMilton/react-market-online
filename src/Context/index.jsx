@@ -3,81 +3,102 @@ import { createContext, useEffect, useState } from "react";
 export const ShoppingCartContext= createContext()
 
 export const ShoppingCartProvider = ({children}) =>{
+ // Shopping Cart · Increment quantity
+ const [count, setCount] = useState(0)
 
-    // Shopping Cart * Increment quantity
-    const [count, setCount] = useState(0);
+ // Product Detail · Open/Close
+ const [isProductDetailOpen, setIsProductDetailOpen] = useState(false)
+ const openProductDetail = () => setIsProductDetailOpen(true)
+ const closeProductDetail = () => setIsProductDetailOpen(false)
 
-    // Product Detail * Open/Close
-    const [isProductDetailOpen, setIsProductDetailOpen]= useState(false)
-    const openProductDetail = () => setIsProductDetailOpen(true)
-    const closeProductDetail = () => setIsProductDetailOpen(false)
+ // Checkout Side Menu · Open/Close
+ const [isCheckoutSideMenuOpen, setIsCheckoutSideMenuOpen] = useState(false)
+ const openCheckoutSideMenu = () => setIsCheckoutSideMenuOpen(true)
+ const closeCheckoutSideMenu = () => setIsCheckoutSideMenuOpen(false)
 
-    //Checkout-side-menu * Open/Close
-    const [isCheckoutSideMenuOpen, setIsCheckoutSideMenuOpen]= useState(false)
-    const openCheckoutSideMenu = () => setIsCheckoutSideMenuOpen(true)
-    const closeCheckoutSideMenu = () => setIsCheckoutSideMenuOpen(false)
-    
-    //Product Detail  * show product
-    const [productToShow, setProductToShow]= useState({})
+ // Product Detail · Show product
+ const [productToShow, setProductToShow] = useState({})
 
-    //Get products
-    const[ items, setItems ] = useState(null)
-    
-    const[ filteredItems, setFilteredItems] = useState(null)
+ // Shopping Cart · Add products to cart
+ const [cartProducts, setCartProducts] = useState([])
 
-    //get products by title
-    const[searchTitle, setSearchByTitle] = useState(null)
+ // Shopping Cart · Order
+ const [order, setOrder] = useState([])
 
-    useEffect( ()=> {
-        fetch('https://api.escuelajs.co/api/v1/products')
-            .then(response => response.json())
-            .then(data => setItems(data))
+ // Get products
+ const [items, setItems] = useState(null)
+ const [filteredItems, setFilteredItems] = useState(null)
 
-    }, [])
+ // Get products by title
+ const [searchByTitle, setSearchByTitle] = useState(null)
 
-    //Shopping Cart * Add products to cart
-    const[ cartProducts, setCartProducts] = useState([])
+ // Get products by category
+ const [searchByCategory, setSearchByCategory] = useState(null)
 
+ useEffect(() => {
+   fetch('https://api.escuelajs.co/api/v1/products')
+     .then(response => response.json())
+     .then(data => setItems(data))
+ }, [])
 
-    //Shopping cart * Order
-    const [ order, setOrder] = useState([])
+ const filteredItemsByTitle = (items, searchByTitle) => {
+   return items?.filter(item => item.title.toLowerCase().includes(searchByTitle.toLowerCase()))
+ }
 
-    //console.log('COUNT: ', count)
+ const filteredItemsByCategory = (items, searchByCategory) => {
+   return items?.filter(item => item.category.name.toLowerCase().includes(searchByCategory.toLowerCase()))
+ }
 
-    const filteredItemsByTitle =( items, searchByTitle)=>{
-        return items?.filter(item => item.title.toLowerCase().includes(searchByTitle.toLowerCase()))
-    }
+ const filterBy = (searchType, items, searchByTitle, searchByCategory) => {
+   if (searchType === 'BY_TITLE') {
+     return filteredItemsByTitle(items, searchByTitle)
+   }
 
-    useEffect( ()=> {
-        if(searchByTitle) setFilteredItems(filteredItemsByTitle(items, searchByTitle))
-    }, [items, searchByTitle])
+   if (searchType === 'BY_CATEGORY') {
+     return filteredItemsByCategory(items, searchByCategory)
+   }
 
+   if (searchType === 'BY_TITLE_AND_CATEGORY') {
+     return filteredItemsByCategory(items, searchByCategory).filter(item => item.title.toLowerCase().includes(searchByTitle.toLowerCase()))
+   }
 
-    return(
-        <ShoppingCartContext.Provider value={{
-            count,
-            setCount,
-            openProductDetail,
-            closeProductDetail,
-            isProductDetailOpen,
-            productToShow,
-            setProductToShow,
-            cartProducts,
-            setCartProducts,
-            isCheckoutSideMenuOpen,
-            openCheckoutSideMenu,
-            closeCheckoutSideMenu,
-            order,
-            setOrder,
-            items,
-            setItems,
-            searchTitle,
-            setSearchByTitle,
-            filteredItems,
-            setFilteredItems
+   if (!searchType) {
+     return items
+   }
+ }
 
-        }}>
-            {children}
-        </ShoppingCartContext.Provider>
-    )
+ useEffect(() => {
+   if (searchByTitle && searchByCategory) setFilteredItems(filterBy('BY_TITLE_AND_CATEGORY', items, searchByTitle, searchByCategory))
+   if (searchByTitle && !searchByCategory) setFilteredItems(filterBy('BY_TITLE', items, searchByTitle, searchByCategory))
+   if (!searchByTitle && searchByCategory) setFilteredItems(filterBy('BY_CATEGORY', items, searchByTitle, searchByCategory))
+   if (!searchByTitle && !searchByCategory) setFilteredItems(filterBy(null, items, searchByTitle, searchByCategory))
+ }, [items, searchByTitle, searchByCategory])
+
+ return (
+   <ShoppingCartContext.Provider value={{
+     count,
+     setCount,
+     openProductDetail,
+     closeProductDetail,
+     isProductDetailOpen,
+     productToShow,
+     setProductToShow,
+     cartProducts,
+     setCartProducts,
+     isCheckoutSideMenuOpen,
+     openCheckoutSideMenu,
+     closeCheckoutSideMenu,
+     order,
+     setOrder,
+     items,
+     setItems,
+     searchByTitle,
+     setSearchByTitle,
+     filteredItems,
+     searchByCategory,
+     setSearchByCategory
+   }}>
+     {children}
+   </ShoppingCartContext.Provider>
+ )
 }
