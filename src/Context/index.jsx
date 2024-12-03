@@ -22,6 +22,8 @@ export const ShoppingCartProvider = ({children}) =>{
 
     //Get products
     const[ items, setItems ] = useState(null)
+    
+    const[ filteredItems, setFilteredItems] = useState(null)
 
     //get products by title
     const[searchTitle, setSearchByTitle] = useState(null)
@@ -40,7 +42,16 @@ export const ShoppingCartProvider = ({children}) =>{
     //Shopping cart * Order
     const [ order, setOrder] = useState([])
 
-    console.log('COUNT: ', count)
+    //console.log('COUNT: ', count)
+
+    const filteredItemsByTitle =( items, searchByTitle)=>{
+        return items?.filter(item => item.title.toLowerCase().includes(searchByTitle.toLowerCase()))
+    }
+
+    useEffect( ()=> {
+        if(searchByTitle) setFilteredItems(filteredItemsByTitle(items, searchByTitle))
+    }, [items, searchByTitle])
+
 
     return(
         <ShoppingCartContext.Provider value={{
@@ -61,7 +72,9 @@ export const ShoppingCartProvider = ({children}) =>{
             items,
             setItems,
             searchTitle,
-            setSearchByTitle
+            setSearchByTitle,
+            filteredItems,
+            setFilteredItems
 
         }}>
             {children}
